@@ -1,11 +1,14 @@
 // Importar biblioteca express
-import express {Request, Response} from "express";
+import express from "express";
 
 // Criar a Aplicação Express 
 const app = express();
 
-// Criar a rota GET principal
+//Incluir os controllers
+import login from "./controllers/login";
 
+//Criar as rotas
+app.use("/", login);
 
 //Iniciar o servidor na porta 3000
 app.listen(8080, () => {
