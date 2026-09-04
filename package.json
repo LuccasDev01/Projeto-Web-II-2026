@@ -14,9 +14,14 @@
   "description": "",
   "dependencies": {
     "@types/node": "^22.15.2",
-    "express": "^5.2.1"
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.24.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^1.1.1"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.6",
     "concurrently": "^10.0.5",
     "ts-node": "^10.9.2"
