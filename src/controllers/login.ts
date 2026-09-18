@@ -1,4 +1,4 @@
-// Importar biblioteca express
+// Importar a biblioteca express;
 import express, {Request, Response} from "express";
 
 //Importar o arquivo com as credênciais do banco de dados
