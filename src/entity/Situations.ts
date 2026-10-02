@@ -7,7 +7,7 @@ export class Situation {
     id!: number;
 
     //nome da situação
-    @Column()
+    @Column({ unique: true })
     nameSituation!: string;
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })

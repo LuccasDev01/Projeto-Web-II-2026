@@ -1,10 +1,9 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-
-//Importar variáveis de ambiente
 import dotenv from "dotenv";
+import { Situation } from "./entity/Situations";
+import { User } from "./entity/Users";
 
-//Carregar as variáveis de ambiente do arquivo .env
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -16,7 +15,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_DATABASE,
     synchronize: false,
     logging: true,
-    entities: [],
+    entities: [Situation, User],
     subscribers: [],
     migrations: [__dirname + "/migration/*.js"],
 });
