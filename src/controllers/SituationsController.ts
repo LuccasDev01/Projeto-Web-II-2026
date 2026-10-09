@@ -2,6 +2,7 @@
 import express, { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Situation } from "../entity/Situations";
+import { PaginationServices } from "../services/PaginationServices";
 
 // Criar a Aplicação Express 
 const router = express.Router();
@@ -9,11 +10,23 @@ const router = express.Router();
 // Criar a lista
 router.get("/situations", async (req: Request, res: Response) => {
     try {
-        const situationRepository = AppDataSource.getRepository(Situation);
-        const situations = await situationRepository.find();
 
-        res.status(200).json(situations);
-        return;
+        //Obter a repertório da entidade Situation
+        const situationRepository = AppDataSource.getRepository(Situation);
+
+        // Receber o número da pagina e definir 1 como padrão
+        const page = parseInt(req.query.page as string) || 1;
+
+        // Definir o limite de registros por página
+
+        const limit = Number(req.query.limit) || 10;
+
+        const result = await PaginationServices.paginate(situationRepository, page, limit, { id: "DESC" });
+
+        //  Retornar a resposta com os dados e as informações de paginação
+               res.status(200).json(result);
+               return;
+
 
     } catch (error) {
         console.error(error);
