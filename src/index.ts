@@ -20,9 +20,16 @@ app.use(express.json());
 import AuthController from "./controllers/AuthController";
 import SituationsController from "./controllers/SituationsController";
 
+import ProductCategoriesController from "./controllers/ProductCategoriesController";
+import ProductSituationsController from "./controllers/ProductSituationsController";
+import ProductsController from "./controllers/ProductsController";
+
 //Criar as rotas
 app.use("/", AuthController);
 app.use("/", SituationsController);
+app.use("/", ProductCategoriesController);
+app.use("/", ProductSituationsController);
+app.use("/", ProductsController);
 
 //Inicializar a conexão com o banco de dados
 AppDataSource.initialize().then(() => {
