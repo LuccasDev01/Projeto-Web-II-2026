@@ -3,6 +3,9 @@ import express, { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Situation } from "../entity/Situations";
 import { PaginationServices } from "../services/PaginationServices";
+import * as yup from 'yup';
+import { InstanceChecker,Not } from "typeorm";
+
 
 // Criar a Aplicação Express 
 const router = express.Router();
@@ -69,7 +72,28 @@ router.post("/situations", async (req: Request, res: Response) => {
     try {
         var data = req.body;
 
+        const schema = yup.object().shape({
+            nameSituation: yup.string()
+            .required("O nome da situação é obrigatório!")
+            .min(3, "O nome da situação deve ter no mínimo 3 caracteres!")
+        });
+
+        await schema.validate(data, { abortEarly: false });
+
         const situationRepository = AppDataSource.getRepository(Situation);
+
+        const existingSituation = await situationRepository.findOne({ 
+            where: { nameSituation: data.nameSituation }
+      
+        });
+
+        if (existingSituation) {
+    res.status(400).json({
+        messagem: "Já existe uma situação com esse nome!",   
+    });
+    return;
+}
+
         const newSituation = situationRepository.create(data);
 
         await situationRepository.save(newSituation);
@@ -82,6 +106,14 @@ router.post("/situations", async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error(error);
+
+        if (error instanceof yup.ValidationError) {
+    res.status(400).json({
+        messagem: "Dados inválidos!",
+        errors: error.errors,
+    });
+    return;
+}
 
         // Violação de UNIQUE no MySQL
         if (error.code === "ER_DUP_ENTRY") {
@@ -105,7 +137,17 @@ router.put("/situations/:id", async (req: Request, res: Response) => {
 
         var data = req.body;
 
+        const schema = yup.object().shape({
+            nameSituation: yup.string()
+            .required("O nome da situação é obrigatório!")
+            .min(3, "O nome da situação deve ter no mínimo 3 caracteres!")
+        });
+
+        await schema.validate(data, { abortEarly: false });
+
         const situationRepository = AppDataSource.getRepository(Situation);
+
+
         const situation = await situationRepository.findOneBy({ id: parseInt(id as string) });
 
         if (!situation) {
@@ -114,6 +156,21 @@ router.put("/situations/:id", async (req: Request, res: Response) => {
             });
             return;
         }
+
+         const existingSituation = await situationRepository.findOne({ 
+            where: { 
+                nameSituation: data.nameSituation,
+                id: Not(parseInt(id as string)),
+            }
+      
+        });
+
+        if (existingSituation) {
+    res.status(400).json({
+        messagem: "Já existe uma situação com esse nome!",   
+    });
+    return;
+}
         //Atualiza os dados da situação com os novos dados recebidos
         situationRepository.merge(situation, data);
         
@@ -127,11 +184,17 @@ router.put("/situations/:id", async (req: Request, res: Response) => {
         return;
 
     } catch (error) {
+        if (error instanceof yup.ValidationError) {
+    res.status(400).json({
+        messagem: "Dados inválidos!",
+        errors: error.errors,
+    });
+    return;
+}
         console.error(error);
         res.status(500).json({
             messagem: "Erro ao atualizar situação!",
         });
-        return;
     }
 });
 
